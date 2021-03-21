@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Stuff
+.*.swp
+deployments/us-east-1/bin/
+deployments/us-east-1/certifi*/
+deployments/us-east-1/chardet*/
+deployments/us-east-1/idna*/
+deployments/us-east-1/requests*/
+deployments/us-east-1/urllib3*/

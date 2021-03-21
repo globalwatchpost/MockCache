@@ -1,0 +1,51 @@
+service: mockcache-us-east-1
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+  region: us-east-1
+  environment:
+    MOCKCACHE_BACKEND_API_URL: "https://virtserver.swaggerhub.com/GlobalWatchpost/GWP_Backend/1.0.1"
+    MOCKCACHE_S3_BUCKET: "mockcache-us-east-1.s3.globalwatchpost.com"
+    MOCKCACHE_AWS_REGION: "us-east-1"
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: 
+        - "s3:PutObject"
+        - "s3:GetObject"
+      Resource: "arn:aws:s3:::mockcache-us-east-1.s3.globalwatchpost.com/*"
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+
+functions:
+  mock_cache:
+    handler: handler.entry_point
+
+    events:
+      - httpApi: '*'        # Thanks for wildcard endpoint functionality HTTP API!
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    NewResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: mockcache-us-east-1.s3.globalwatchpost.com
