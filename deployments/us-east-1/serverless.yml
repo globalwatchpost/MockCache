@@ -42,6 +42,13 @@ functions:
     events:
       - httpApi: '*'        # Thanks for wildcard endpoint functionality HTTP API!
 
+  clear_cache:
+    handler: handler.clear_cache_entry_point
+    events:
+      - httpApi:
+          method: GET
+          path: /mock_cache/clear/{what_to_clear}
+
 # you can add CloudFormation resource templates here
 resources:
   Resources:

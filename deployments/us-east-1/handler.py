@@ -92,3 +92,22 @@ def entry_point(event, context):
     }
 
     return response
+
+
+def clear_cache_entry_point(event, context):
+    logger.info("Clear cache entry point hit")
+
+    status_code = 204
+
+    headers = { 
+        "access-control-allow-method": "*",
+        "access-control-allow-origin": "*",
+    }
+
+    response = {
+        "statusCode"    : status_code,
+        "headers"       : headers,
+        "body"          : None
+    }
+
+    return response
