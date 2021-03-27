@@ -8,8 +8,10 @@ import botocore
 
 
 logger = logging.getLogger()
-logger.setLevel( logging.INFO )
-s3_handle = boto3.resource( 's3', region_name=os.environ['MOCKCACHE_AWS_REGION'] )
+logger.setLevel( logging.DEBUG )
+s3_handle = boto3.resource( 's3',   region_name=os.environ['MOCKCACHE_AWS_REGION'] )
+s3_bucket = s3_handle.Bucket( os.environ['MOCKCACHE_S3_BUCKET'] )
+s3_client = boto3.client('s3', region_name=os.environ['MOCKCACHE_AWS_REGION'] )
 
 
 def entry_point(event, context):
@@ -97,7 +99,37 @@ def entry_point(event, context):
 def clear_cache_entry_point(event, context):
     logger.info("Clear cache entry point hit")
 
-    status_code = 204
+    # Find all items in S3 bucket and nuke them
+    delete_objects_field = { 
+        'Objects'   : [],
+        'Quiet'     : True,
+    }
+
+    for curr_object in s3_bucket.objects.all():
+        #all_s3_keys.append( curr_object.key )
+        delete_objects_field[ 'Objects' ].append( 
+            {
+                'Key'   : curr_object.key 
+            }
+        )
+
+    if len( delete_objects_field['Objects'] ) > 0:
+
+        #logger.info( "Delete objects field:\n{0}".format( json.dumps(delete_objects_field, indent=4, sort_keys=True)) )
+
+        delete_response = s3_client.delete_objects(
+            Bucket      = os.environ['MOCKCACHE_S3_BUCKET'],
+            Delete      = delete_objects_field
+        )
+
+        files_deleted = len( delete_response['Deleted'] )
+
+    else:
+
+        files_deleted = 0
+    
+
+    status_code = 200
 
     headers = { 
         "access-control-allow-method": "*",
@@ -107,7 +139,8 @@ def clear_cache_entry_point(event, context):
     response = {
         "statusCode"    : status_code,
         "headers"       : headers,
-        "body"          : None
+        "body"          : json.dumps( { "files_deleted": files_deleted }, indent=4, sort_keys=True )
     }
 
     return response
+

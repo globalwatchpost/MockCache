@@ -14,9 +14,18 @@ provider:
   iamRoleStatements:
     - Effect: "Allow"
       Action: 
-        - "s3:PutObject"
-        - "s3:GetObject"
+#       - "s3:PutObject"
+#       - "s3:GetObject"
+#       - "s3:ListObjects"
+        - "s3:*"
       Resource: "arn:aws:s3:::mockcache-us-east-1.s3.globalwatchpost.com/*"
+    - Effect: "Allow"
+      Action:
+#        - "s3:ListObjects"
+        - "s3:*"
+#      Resource: "arn:aws:s3:::mockcache-us-east-1.s3.globalwatchpost.com"
+      Resource: "arn:aws:s3:::*"
+
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -47,7 +56,7 @@ functions:
     events:
       - httpApi:
           method: GET
-          path: /mock_cache/clear/{what_to_clear}
+          path: /mock_cache/clear
 
 # you can add CloudFormation resource templates here
 resources:
